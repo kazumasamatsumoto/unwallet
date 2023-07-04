@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Web3 from "web3";
 import { UnWallet } from "unwallet-client-sdk";
 import logo from "./logo.svg";
 import "./App.css";
@@ -20,9 +19,10 @@ function useQuery() {
 function App() {
   const [unWallet, setUnWallet] = useState<UnWallet | null>(null);
   const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [ethBalance, setEthBalance] = useState<string | null>(null);
   let query = useQuery();
+  console.log(query);
   const idToken = query.get("id_token");
+  console.log(idToken);
 
   useEffect(() => {
     async function initUnWallet() {
@@ -56,23 +56,6 @@ function App() {
     initUnWallet();
   }, [idToken]);
 
-  useEffect(() => {
-    async function getBalance() {
-      if (userAddress) {
-        const web3 = new Web3(
-          new Web3.providers.HttpProvider(
-            "https://linea-goerli.infura.io/v3/9ce58237ed574387a11f41dd774d9fd2"
-          )
-        );
-        const balanceWei = await web3.eth.getBalance(userAddress, "wei");
-        const balanceEth = web3.utils.fromWei(balanceWei, "ether");
-        setEthBalance(balanceEth);
-      }
-    }
-
-    getBalance();
-  }, [userAddress]);
-
   const handleLogin = () => {
     if (unWallet) {
       const nonce = generateNonce();
@@ -93,7 +76,6 @@ function App() {
         </p>
         <button onClick={handleLogin}>Login with UnWallet</button>
         {userAddress && <p>Your address: {userAddress}</p>}
-        {ethBalance && <p>Your ETH balance: {ethBalance}</p>}
       </header>
     </div>
   );
