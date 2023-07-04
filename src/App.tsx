@@ -1,8 +1,89 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import Web3 from "web3";
+import { UnWallet } from "unwallet-client-sdk";
+import logo from "./logo.svg";
+import "./App.css";
+import { useLocation } from "react-router-dom";
+
+function generateNonce() {
+  let array = new Uint8Array(16);
+  window.crypto.getRandomValues(array);
+  return Array.from(array)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function useQuery() {
+  return new URLSearchParams(useLocation().hash.substring(1));
+}
 
 function App() {
+  const [unWallet, setUnWallet] = useState<UnWallet | null>(null);
+  const [userAddress, setUserAddress] = useState<string | null>(null);
+  const [ethBalance, setEthBalance] = useState<string | null>(null);
+  let query = useQuery();
+  const idToken = query.get("id_token");
+
+  useEffect(() => {
+    async function initUnWallet() {
+      const wallet = await UnWallet.init({
+        clientID: "135243561738010",
+        env: "dev",
+      });
+
+      setUnWallet(wallet);
+
+      if (idToken) {
+        const idTokenParts = idToken.split(".");
+        const base64Url = idTokenParts[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          window
+            .atob(base64)
+            .split("")
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+        );
+
+        const idTokenClaim = JSON.parse(jsonPayload);
+        const address = idTokenClaim.sub;
+        setUserAddress(address);
+      }
+    }
+
+    initUnWallet();
+  }, [idToken]);
+
+  useEffect(() => {
+    async function getBalance() {
+      if (userAddress) {
+        const web3 = new Web3(
+          new Web3.providers.HttpProvider(
+            "https://linea-goerli.infura.io/v3/9ce58237ed574387a11f41dd774d9fd2"
+          )
+        );
+        const balanceWei = await web3.eth.getBalance(userAddress, "wei");
+        const balanceEth = web3.utils.fromWei(balanceWei, "ether");
+        setEthBalance(balanceEth);
+      }
+    }
+
+    getBalance();
+  }, [userAddress]);
+
+  const handleLogin = () => {
+    if (unWallet) {
+      const nonce = generateNonce();
+
+      unWallet.authorize({
+        redirectURL: "https://unwallet-9b14a.web.app/",
+        nonce: nonce,
+      });
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -10,14 +91,9 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <button onClick={handleLogin}>Login with UnWallet</button>
+        {userAddress && <p>Your address: {userAddress}</p>}
+        {ethBalance && <p>Your ETH balance: {ethBalance}</p>}
       </header>
     </div>
   );
