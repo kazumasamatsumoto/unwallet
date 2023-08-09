@@ -40,11 +40,10 @@ const Map = () => {
   useEffect(() => {
     const fetchNftData = async () => {
       const ipfsDataArray = await fetchContractData();
-      console.log(ipfsDataArray);
-      console.log(typeof ipfsDataArray);
       const jsonArray = ipfsDataArray.map((jsonString) =>
         JSON.parse(jsonString)
       );
+      console.log(jsonArray);
 
       // Convert jsonArray to Stop[]
       const convertedStops: Stop[] = jsonArray.map((data: any) => ({
