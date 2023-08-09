@@ -12,10 +12,6 @@ type Stop = {
   imageURL: string;
 };
 
-const ipfsURLtoHTTP = (ipfsURL: string) => {
-  return ipfsURL.replace('ipfs://', 'https://ipfs.io/ipfs/');
-}
-
 const moveIcon = new L.Icon({
   iconUrl: "/pin_drop.png",
   iconRetinaUrl: "/pin_drop.png",
@@ -44,6 +40,8 @@ const Map = () => {
   useEffect(() => {
     const fetchNftData = async () => {
       const ipfsDataArray = await fetchContractData();
+      console.log(ipfsDataArray);
+      console.log(typeof ipfsDataArray);
       const jsonArray = ipfsDataArray.map((jsonString) =>
         JSON.parse(jsonString)
       );
@@ -64,7 +62,7 @@ const Map = () => {
         ],
         name: data.name,
         description: data.description,
-        imageURL: ipfsURLtoHTTP(data.image),
+        imageURL: data.image,
       }));
 
       setStops(convertedStops); // Update stops state with the converted data
