@@ -1,0 +1,19 @@
+{
+  "name": "岩手役場",
+  "description": "サマースクール2023",
+  "image": "ipfs://bafkreid73myjegvtanf4s2lirmia44jizlxw4y2qg62qrshtny3s3i3eii",
+  "attributes": [
+    {
+      "trait_type": "PositionX_string",
+      "value": "39.972942634179105"
+    },
+    {
+      "trait_type": "PositionY_string",
+      "value": "141.21218745295783"
+    },
+    {
+      "trait_type": "PositionZ_string",
+      "value": "308"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "サマースクールテスト",
+  "description": "サマースクールテスト",
+  "image": "ipfs://bafkreifmjv3hemgdbu63vaof4oz5bqj2sj4v3lco44gsvc6v7dofnrvmli",
+  "attributes": [
+    {
+      "trait_type": "PositionX_string",
+      "value": "39.7014371"
+    },
+    {
+      "trait_type": "PositionY_string",
+      "value": "141.136723"
+    },
+    {
+      "trait_type": "PositionZ_string",
+      "value": "308"
+    }
+  ]
+}
