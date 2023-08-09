@@ -1,15 +1,15 @@
 {
-  "name": "盛岡駅",
+  "name": "稲村製剤所",
   "description": "サマースクール2023",
-  "image": "ipfs://bafybeicwwhmdiukm7kxnydaoxwpje6tb4x442mnspdckacwqoi6tnq4mqq",
+  "image": "ipfs://bafybeigqtnoemgfdqsmpzgippo74zgfyqk2n2pfkb2rqqbpq7wgoj2ji3a",
   "attributes": [
     {
       "trait_type": "PositionX_string",
-      "value": "39.7014371"
+      "value": "39.9638448"
     },
     {
       "trait_type": "PositionY_string",
-      "value": "141.136723"
+      "value": "141.2170344"
     },
     {
       "trait_type": "PositionZ_string",
