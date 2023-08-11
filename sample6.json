@@ -1,0 +1,19 @@
+{
+  "name": "(有)稲村製材所",
+  "description": "サマースクール2023",
+  "image": "ipfs://bafybeigqtnoemgfdqsmpzgippo74zgfyqk2n2pfkb2rqqbpq7wgoj2ji3a",
+  "attributes": [
+    {
+      "trait_type": "PositionX_string",
+      "value": "39.9638448"
+    },
+    {
+      "trait_type": "PositionY_string",
+      "value": "141.2170344"
+    },
+    {
+      "trait_type": "PositionZ_string",
+      "value": "308"
+    }
+  ]
+}

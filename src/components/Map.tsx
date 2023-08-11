@@ -12,9 +12,16 @@ type Stop = {
   imageURL: string;
 };
 
+const OFFSET = 0.0001; // オフセット量を定義
+
+const offsetPosition = (position: LatLngTuple, count: number): LatLngTuple => {
+  // 位置をわずかにずらす
+  return [position[0] + OFFSET * count, position[1] + OFFSET * count];
+};
+
 const ipfsURLtoHTTP = (ipfsURL: string) => {
-  return ipfsURL.replace('ipfs://', 'https://ipfs.io/ipfs/');
-}
+  return ipfsURL.replace("ipfs://", "https://ipfs.io/ipfs/");
+};
 
 const moveIcon = new L.Icon({
   iconUrl: "/pin_drop.png",
@@ -74,6 +81,15 @@ const Map = () => {
     fetchNftData();
   }, []);
 
+  // 位置情報の重複をチェックするためのヘルパー関数
+  const getDuplicateCount = (position: LatLngTuple, index: number): number => {
+    return stops
+      .slice(0, index)
+      .filter(
+        (s) => s.position[0] === position[0] && s.position[1] === position[1]
+      ).length;
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -88,28 +104,33 @@ const Map = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {stops.map((stop, idx) => (
-        <Marker
-          position={stop.position}
-          key={idx}
-          icon={moveIcon}
-          eventHandlers={{
-            click: () => {
-              setSelectedStop(stop);
-            },
-          }}
-        >
-          <Popup>
-            <h2>{`${idx + 1}. ${stop.name}`}</h2>
-            <img
-              src={stop.imageURL}
-              alt={stop.name}
-              style={{ width: "100%", height: "auto" }}
-            />
-            <p>Description: {stop.description}</p>
-          </Popup>
-        </Marker>
-      ))}
+      {stops.map((stop, idx) => {
+        const count = getDuplicateCount(stop.position, idx);
+        const offsettedPosition = offsetPosition(stop.position, count);
+
+        return (
+          <Marker
+            position={offsettedPosition} // 位置をずらしたものを使用
+            key={idx}
+            icon={moveIcon}
+            eventHandlers={{
+              click: () => {
+                setSelectedStop(stop);
+              },
+            }}
+          >
+            <Popup>
+              <h2>{`${idx + 1}. ${stop.name}`}</h2>
+              <img
+                src={stop.imageURL}
+                alt={stop.name}
+                style={{ width: "100%", height: "auto" }}
+              />
+              <p>Description: {stop.description}</p>
+            </Popup>
+          </Marker>
+        );
+      })}
       {selectedStop && (
         <SelectedStopInfo stop={selectedStop} key={selectedStop.name} />
       )}
