@@ -2,45 +2,74 @@ import fetch from "node-fetch";
 import { ABI } from "../const/ABI";
 const Web3 = require("web3");
 
-const contractAddress = "0x68Ab0531bF0932ece095797d8E62617e2C234C80";
+const contractAddresses = [
+  "0x7553969b6cac46454330c584eeedecd69b422384", // 作品NFTのコントラクトアドレス
+  "0x7B45b4cB1f45d9B76CAB2B3628Ba632Cb96Ec8a8", // 卒業NFTのコントラクトアドレス
+];
+
 const web3 = new Web3(
   new Web3.providers.HttpProvider("https://rpc-mainnet.maticvigil.com")
 );
-const contract = new web3.eth.Contract(ABI, contractAddress);
 
-async function getContractData(): Promise<string[]> {
-  const uris: string[] = [];
+async function getContractData(
+  address: string
+): Promise<{ uri: string; owner: string }[]> {
+  const data: { uri: string; owner: string }[] = [];
+  const contract = new web3.eth.Contract(ABI, address);
+
   try {
     const tokenCounter = await contract.methods.totalSupply().call();
+
     for (let i = 0; i < tokenCounter; i++) {
       const uri = await contract.methods.tokenURI(i).call();
-      uris.push(uri);
+      const owner = await contract.methods.ownerOf(i).call();
+
+      data.push({ uri, owner });
     }
-    return uris;
   } catch (error) {
     console.error("Error reading data from contract:", error);
-    return [];
   }
+
+  return data;
 }
 
-async function fetchData(uris: string[]): Promise<string[]> {
-  const results: string[] = [];
-  for (const uri of uris) {
+async function fetchData(data: { uri: string, owner: string }[]): Promise<any[]> {
+  const results: any[] = [];
+
+  for (const item of data) {
     try {
-      const response = await fetch(uri);
-      const data = await response.text();
-      results.push(data);
+      const response = await fetch(item.uri);
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        if (errorData.includes("<Code>NoSuchKey</Code>")) {
+          console.warn(`Skipping missing URI: ${item.uri}`);
+          continue; // Skip to next iteration
+        }
+        throw new Error(`Fetch failed for URI ${item.uri} with status ${response.status}`);
+      }
+
+      const fetchedData = await response.json();
+      fetchedData["Owner"] = item.owner;  // Owner情報を追加
+
+      results.push(JSON.stringify(fetchedData));
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }
+
   return results;
 }
 
 async function main(): Promise<string[]> {
-  const uris = await getContractData();
-  if (uris.length > 0) {
-    return await fetchData(uris);
+  const allData: { uri: string, owner: string }[] = [];
+  for (const address of contractAddresses) {
+    const dataFromAddress = await getContractData(address);
+    allData.push(...dataFromAddress);
+  }
+
+  if (allData.length > 0) {
+    return await fetchData(allData);
   }
   return [];
 }

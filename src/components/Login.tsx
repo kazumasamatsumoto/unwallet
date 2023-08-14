@@ -26,8 +26,8 @@ const Login = () => {
   useEffect(() => {
     async function initUnWallet() {
       const wallet = await UnWallet.init({
-        clientID: "135243561738010",
-        env: "dev",
+        clientID: "144261257165881",
+        // env: "dev", testnet only
       });
 
       setUnWallet(wallet);
@@ -48,13 +48,30 @@ const Login = () => {
 
         const idTokenClaim = JSON.parse(jsonPayload);
         const address = idTokenClaim.sub;
-        setUserAddress(address);
-        navigate("/map");
+        setUserAddress(address); // This will trigger the next useEffect
       }
+    }
+
+    const savedAddress = localStorage.getItem("userAddress");
+    if (savedAddress) {
+      setUserAddress(savedAddress);
     }
 
     initUnWallet();
   }, [idToken, navigate]);
+
+  useEffect(() => {
+    // Whenever the userAddress changes, save it to local storage
+    if (userAddress) {
+      localStorage.setItem("userAddress", userAddress);
+
+      // After storing to local storage, navigate to map
+      if (idToken) {
+        navigate("/map");
+      }
+    }
+  }, [userAddress, idToken, navigate]);
+
 
   const handleLogin = () => {
     if (unWallet) {
