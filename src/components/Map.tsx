@@ -169,6 +169,7 @@ const Map = () => {
       <LoadingContainer>
         <LoadingSpinner />
         <div>Loading...</div>
+        <div>データ取得に時間がかかっております。しばらくお待ちください。🙇‍♂️</div>
       </LoadingContainer>
     );
   }
