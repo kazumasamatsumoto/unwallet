@@ -3,53 +3,12 @@ import L, { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import fetchContractData from "../util/genNFTData";
-import styled from "styled-components";
+import { RADIUS_KM, DEGREE_PER_KM, LoadingSpinner, LoadingContainer } from './MapStyled';
+import { Stop } from './MapTypes';
 
-type Attribute = {
-  trait_type: string;
-  value: string;
-};
 
-type Stop = {
-  position: LatLngTuple;
-  name: string;
-  owner: string;
-  description: string;
-  imageURL: string;
-  attributes: Attribute[]; // 新しい属性情報を追加
-};
 
-const RADIUS_KM = 1;
-const DEGREE_PER_KM = 0.009;
 
-const LoadingSpinner = styled.div`
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 4px solid #000;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 18px;
-  font-weight: bold;
-`;
 
 // Don't forget to include the keyframes somewhere global, like in a CSS file.
 
@@ -98,6 +57,17 @@ const Map = () => {
   const [stops, setStops] = useState<Stop[]>([]);
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
   const [loading, setLoading] = useState(true);
+
+    // UnWalletのアドレスを管理するステートを追加
+    const [unWalletAddress, setUnWalletAddress] = useState<string | null>(null);
+
+    useEffect(() => {
+      // ローカルストレージからアドレスを取得してステートに設定
+      const savedAddress = localStorage.getItem("userAddress");
+      if (savedAddress) {
+        setUnWalletAddress(savedAddress);
+      }
+    }, []);
 
   useEffect(() => {
     const fetchNftData = async () => {
@@ -180,6 +150,7 @@ const Map = () => {
       zoom={13}
       style={{ height: "100vh", width: "100%" }}
     >
+      {unWalletAddress && <p>Logged in as: {unWalletAddress}</p>}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
