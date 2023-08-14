@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import L, { LatLngTuple } from "leaflet";
+import { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import fetchContractData from "../util/genNFTData";
@@ -10,6 +10,7 @@ import {
   LoadingContainer,
 } from "./MapStyled";
 import { Stop } from "./MapTypes";
+import { moveIcon } from "../const/icon";
 
 // Don't forget to include the keyframes somewhere global, like in a CSS file.
 
@@ -27,14 +28,6 @@ const offsetFixedPositionWithin1km = (
     position[1] + fixedRadius * Math.cos(fixedAngle),
   ];
 };
-
-const moveIcon = new L.Icon({
-  iconUrl: "/pin_drop.png",
-  iconRetinaUrl: "/pin_drop.png",
-  iconSize: [40, 40],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-});
 
 const SelectedStopInfo: React.FC<{ stop: Stop; key: any }> = ({ stop }) => (
   <div style={{ position: "absolute", bottom: 10, right: 10 }}>
