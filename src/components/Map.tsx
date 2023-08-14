@@ -3,12 +3,13 @@ import L, { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import fetchContractData from "../util/genNFTData";
-import { RADIUS_KM, DEGREE_PER_KM, LoadingSpinner, LoadingContainer } from './MapStyled';
-import { Stop } from './MapTypes';
-
-
-
-
+import {
+  RADIUS_KM,
+  DEGREE_PER_KM,
+  LoadingSpinner,
+  LoadingContainer,
+} from "./MapStyled";
+import { Stop } from "./MapTypes";
 
 // Don't forget to include the keyframes somewhere global, like in a CSS file.
 
@@ -58,16 +59,16 @@ const Map = () => {
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
   const [loading, setLoading] = useState(true);
 
-    // UnWalletのアドレスを管理するステートを追加
-    const [unWalletAddress, setUnWalletAddress] = useState<string | null>(null);
+  // UnWalletのアドレスを管理するステートを追加
+  const [unWalletAddress, setUnWalletAddress] = useState<string | null>(null);
 
-    useEffect(() => {
-      // ローカルストレージからアドレスを取得してステートに設定
-      const savedAddress = localStorage.getItem("userAddress");
-      if (savedAddress) {
-        setUnWalletAddress(savedAddress);
-      }
-    }, []);
+  useEffect(() => {
+    // ローカルストレージからアドレスを取得してステートに設定
+    const savedAddress = localStorage.getItem("userAddress");
+    if (savedAddress) {
+      setUnWalletAddress(savedAddress);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchNftData = async () => {
@@ -139,7 +140,9 @@ const Map = () => {
       <LoadingContainer>
         <LoadingSpinner />
         <div>Loading...</div>
-        <div>データ取得に時間がかかっております。しばらくお待ちください。🙇‍♂️</div>
+        <div>
+          データ取得に時間がかかっております。しばらくお待ちください。🙇‍♂️
+        </div>
       </LoadingContainer>
     );
   }
