@@ -47,6 +47,29 @@ const truncateAddress = (address: string, startLength = 6, endLength = 6) => {
   )}`;
 };
 
+const PopupContent = ({ stop, idx }: any) => (
+  <div style={{ maxHeight: "250px", overflowY: "auto" }}>
+    <h2>{`${idx + 1}. ${stop.name}`}</h2>
+    <img
+      src={stop.imageURL}
+      alt={stop.name}
+      style={{ width: "100%", height: "auto" }}
+    />
+    <p>Owner: {stop.owner}</p>
+    <p>Description: {stop.description}</p>
+    <ul>
+      {stop.attributes.map((attr: any, index: any) => (
+        <li key={index}>
+          {attr.trait_type === "Previous_wallet_address" ||
+          attr.trait_type === "Previous_contract_address"
+            ? `${attr.trait_type}: ${truncateAddress(attr.value)}`
+            : `${attr.trait_type}: ${attr.value}`}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 const Map = () => {
   const [stops, setStops] = useState<Stop[]>([]);
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
@@ -164,24 +187,7 @@ const Map = () => {
             }}
           >
             <Popup>
-              <h2>{`${idx + 1}. ${stop.name}`}</h2>
-              <img
-                src={stop.imageURL}
-                alt={stop.name}
-                style={{ width: "100%", height: "auto" }}
-              />
-              <p>Owner: {stop.owner}</p>
-              <p>Description: {stop.description}</p>
-              <ul>
-                {stop.attributes.map((attr, index) => (
-                  <li key={index}>
-                    {attr.trait_type === "Previous_wallet_address" ||
-                    attr.trait_type === "Previous_contract_address"
-                      ? `${attr.trait_type}: ${truncateAddress(attr.value)}`
-                      : `${attr.trait_type}: ${attr.value}`}
-                  </li>
-                ))}
-              </ul>
+              <PopupContent stop={stop} idx={idx} />
             </Popup>
           </Marker>
         );
